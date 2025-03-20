@@ -1,5 +1,7 @@
 pipeline {
-  agent any
+  agent {
+    label 'agent-jenkins-01'
+  }
   
   stages {
     stage("Membuat file JSON") {
