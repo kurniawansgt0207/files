@@ -1,10 +1,11 @@
 pipeline {
-  agent {
-    label 'agent-jenkins-01'
-  }
+  agent none
   
   stages {
     stage("Membuat file JSON") {
+      agent {
+        label 'agent-jenkins-01'
+      }
       steps {
         echo "Mulai membuat file JSON"
         script {
@@ -23,6 +24,9 @@ pipeline {
     }
 
     stage("Membaca file JSON") {
+      agent {
+        label 'agent-jenkins-02'
+      }
       steps {
         echo "Mulai membaca file info.json"
         script {
