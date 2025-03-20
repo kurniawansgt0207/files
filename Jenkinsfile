@@ -28,6 +28,7 @@ pipeline {
         script {
           def JsonContent = sh(script: 'cat /var/lib/jenkins/workspace/Pipeline-Utility-Step/info.json', returnStdout: true).trim()
           echo "JSON Content: \n${JsonContent}"
+          echo "Key buildStatus: \n${JsonContent.buildStatus}"
         }
         echo "Selesai membaca file info.json"
       }
