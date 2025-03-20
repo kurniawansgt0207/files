@@ -26,7 +26,7 @@ pipeline {
       steps {
         echo "Mulai membaca file info.json"
         script {
-          def JsonContent = sh(script: 'cat /var/lib/jenkins/Pipeline-Utility-Step/info.json', returnStdout: true).trim()
+          def JsonContent = sh(script: 'cat /var/lib/jenkins/workspace/Pipeline-Utility-Step/info.json', returnStdout: true).trim()
           echo "JSON Content: \n${JsonContent}"
         }
         echo "Selesai membaca file info.json"
