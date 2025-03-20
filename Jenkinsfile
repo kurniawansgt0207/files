@@ -7,10 +7,10 @@ pipeline {
         echo "Mulai membuat file JSON"
         script {
           def JsonData = [
-              pipelineStart: new Date().String,
+              pipelineStart: new Date().toString(),
               buildStatus: 'success',
-              buildTime: new Date().toString,
-              deployTime: new Date().toString,
+              buildTime: new Date().toString(),
+              deployTime: new Date().toString(),
             ]
 
             writeJSON file: '/var/lib/jenkins/workspace/Pipeline-Utility-Step/info.json', json: JsonData
