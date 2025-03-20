@@ -27,8 +27,11 @@ pipeline {
         echo "Mulai membaca file info.json"
         script {
           def JsonContent = sh(script: 'cat /var/lib/jenkins/workspace/Pipeline-Utility-Step/info.json', returnStdout: true).trim()
+          def buildStatus = sh(script: 'cat /var/lib/jenkins/workspace/Pipeline-Utility-Step/info.json | jq .buildStatus', returnStdout: true).trim()
+          def deployTime = sh(script: 'cat /var/lib/jenkins/workspace/Pipeline-Utility-Step/info.json | jq .deployTime', returnStdout: true).trim()
           echo "JSON Content: \n${JsonContent}"
-          echo "Key buildStatus: \n${JsonContent.buildStatus}"
+          echo "buil status: \n${buildStatus}"
+          echo "deploy time: \n${deployTime}"
         }
         echo "Selesai membaca file info.json"
       }
