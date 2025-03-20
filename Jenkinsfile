@@ -1,45 +1,50 @@
 pipeline {
-  agent none
-  
-  stages {
-    stage("Membuat file JSON") {
-      agent {
-        label 'agent-jenkins-01'
-      }
-      steps {
-        echo "Mulai membuat file JSON"
-        script {
-          def JsonData = [
-              pipelineStart: new Date().toString(),
-              buildStatus: 'success',
-              buildTime: new Date().toString(),
-              deployTime: new Date().toString(),
-            ]
-
-            writeJSON file: '/var/lib/jenkins/workspace/Pipeline-Utility-Step/info.json', json: JsonData
-            echo "Json data berhasil di buat pada /var/lib/jenkins/workspace/Pipeline-Utility-Step"
-        }
-        echo "Selesai membuat file JSON"
-      }
+    agent {
+        label 'docker-agent'
     }
 
-    stage("Membaca file JSON") {
-      agent {
-        label 'agent-jenkins-02'
-      }
-      steps {
-        echo "Mulai membaca file info.json"
-        script {
-          def JsonContent = sh(script: 'cat /var/lib/jenkins/workspace/Pipeline-Utility-Step/info.json', returnStdout: true).trim()
-          def buildStatus = sh(script: 'cat /var/lib/jenkins/workspace/Pipeline-Utility-Step/info.json | jq .buildStatus', returnStdout: true).trim()
-          def deployTime = sh(script: 'cat /var/lib/jenkins/workspace/Pipeline-Utility-Step/info.json | jq .deployTime', returnStdout: true).trim()
-          echo "JSON Content: \n${JsonContent}"
-          echo "buil status: \n${buildStatus}"
-          echo "deploy time: \n${deployTime}"
-        }
-        echo "Selesai membaca file info.json"
-      }
+    environment {
+        IMAGE_NAME = "vue-consume-api"
+        DOCKER_HUB_REPO = "sigitkurniawan0207/vue-consume-api"
     }
-  }
 
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/kurniawansgt0207/vue-consume-api.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.build("${DOCKER_HUB_REPO}:latest")
+                }
+            }
+        }
+
+        stage('Login to Docker Hub') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-access', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                    }
+                }
+            }
+        }
+
+        stage('Push Image to Docker Hub') {
+            steps {
+                script {
+                    docker.image("${DOCKER_HUB_REPO}:latest").push()
+                }
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                sh "docker rmi ${DOCKER_HUB_REPO}:latest"
+            }
+        }
+    }
 }
